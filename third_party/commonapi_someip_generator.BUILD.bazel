@@ -1,0 +1,5 @@
+filegroup(
+    name = "commonapi_someip_generator",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)

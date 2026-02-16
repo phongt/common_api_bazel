@@ -1,0 +1,4 @@
+# Bazel configuration for CommonAPI code generation
+
+# Optional: Use verbose output for debugging
+# common --verbose_failures

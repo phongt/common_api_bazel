@@ -1,0 +1,79 @@
+bazel_dep(name = "rules_cc", version = "0.2.16")
+bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "boost",
+    build_file_content = """
+filegroup(
+    name = "all_srcs",
+    srcs = glob(["**"], exclude = ["libs/**/test/**"]),
+    visibility = ["//visibility:public"],
+)
+""",
+    sha256 = "7da75f171837577a52bbf217e17f8ea576c7c246e4594d617bfde7fafd408be5",
+    strip_prefix = "boost-1.87.0",
+    urls = ["https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz"],
+)
+
+http_archive(
+    name = "vsomeip",
+    build_file = "@//:third_party/vsomeip.BUILD.bazel",
+    integrity = "sha256-lXdZnBQt+J6gfEMKfTLBFmf9BlDJOsz+FxATmqFFzr4=",
+    strip_prefix = "vsomeip-3.6.0",
+    urls = [
+        "https://github.com/COVESA/vsomeip/archive/refs/tags/3.6.0.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "capicxx_core_runtime",
+    build_file = "@//:third_party/capicxx_core_runtime.BUILD.bazel",
+    integrity = "sha256-5VTQxWPh54pi2keDXlxNqTLAe9UTqMk9na2nJW+kUyU=",
+    strip_prefix = "capicxx-core-runtime-3.2.4",
+    urls = [
+        "https://github.com/COVESA/capicxx-core-runtime/archive/refs/tags/3.2.4.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "capicxx_someip_runtime",
+    build_file = "@//:third_party/capicxx_someip_runtime.BUILD.bazel",
+    integrity = "sha256-XSeKI88itTj0+QOUK0uJV0V1PvJPDoKB8DXR0bf8s4g=",
+    strip_prefix = "capicxx-someip-runtime-3.2.4",
+    urls = [
+        "https://github.com/COVESA/capicxx-someip-runtime/archive/refs/tags/3.2.4.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "commonapi_core_generator",
+    build_file = "@//:third_party/commonapi_core_generator.BUILD.bazel",
+    integrity = "sha256-/+WTyU+YB47c3c/TIvLNo0wEM/l4yRLI5duAOkoRhwI=",
+    urls = [
+        "https://github.com/COVESA/capicxx-core-tools/releases/download/3.2.15/commonapi_core_generator.zip",
+    ],
+)
+
+http_archive(
+    name = "commonapi_someip_generator",
+    build_file = "@//:third_party/commonapi_someip_generator.BUILD.bazel",
+    integrity = "sha256-WHEj6vfUuV+rg/1mZwdqcRlfBDZOBm1TEkun6+xp+Fk=",
+    urls = [
+        "https://github.com/COVESA/capicxx-someip-tools/releases/download/3.2.15/commonapi_someip_generator.zip",
+    ],
+)
+
+# CommonAPI code generation repository
+commonapi_gen_repo = use_repo_rule("@//:commonapi_repository.bzl", "commonapi_gen_repo")
+
+commonapi_gen_repo(
+    name = "commonapi_helloworld_generated",
+    core_generator = "@commonapi_core_generator",
+    fdepl_files = ["@//fidl:HelloWorld.fdepl"],
+    fidl_files = ["@//fidl:HelloWorld.fidl"],
+    interface_name = "HelloWorld",
+    someip_generator = "@commonapi_someip_generator",
+)
+

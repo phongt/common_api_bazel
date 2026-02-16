@@ -1,0 +1,44 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+filegroup(
+    name = "commonapi4someip_cfg",
+    srcs = ["commonapi4someip.ini"],
+)
+
+cc_binary(
+    name = "HelloWorldService",
+    srcs = [
+        "HelloWorldService.cpp",
+        "HelloWorldStubImpl.cpp",
+        "HelloWorldStubImpl.hpp",
+    ],
+    data = [":commonapi4someip_cfg"],
+    dynamic_deps = [
+        "@commonapi_helloworld_generated//:HelloWorld-someip",
+    ],
+    env = {
+        "COMMONAPI_CONFIG": "$(location :commonapi4someip_cfg)",
+    },
+    deps = [
+        "@capicxx_core_runtime",
+        "@commonapi_helloworld_generated//:core",
+    ],
+)
+
+cc_binary(
+    name = "HelloWorldClient",
+    srcs = [
+        "HelloWorldClient.cpp",
+    ],
+    data = [":commonapi4someip_cfg"],
+    dynamic_deps = [
+        "@commonapi_helloworld_generated//:HelloWorld-someip",
+    ],
+    env = {
+        "COMMONAPI_CONFIG": "$(location :commonapi4someip_cfg)",
+    },
+    deps = [
+        "@capicxx_core_runtime",
+        "@commonapi_helloworld_generated//:core",
+    ],
+)

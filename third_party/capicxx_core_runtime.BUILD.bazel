@@ -1,0 +1,18 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+
+filegroup(
+    name = "all_srcs",
+    srcs = glob(["**"]),
+)
+
+cmake(
+    name = "capicxx_core_runtime",
+    build_args = ["-j"],
+    out_shared_libs = [
+        "libCommonAPI.so",
+        "libCommonAPI.so.3.2.4",
+    ],
+    out_include_dir = "include/CommonAPI-3.2",
+    lib_source = ":all_srcs",
+    visibility = ["//visibility:public"],
+)
