@@ -1,18 +1,71 @@
-load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
-filegroup(
-    name = "all_srcs",
-    srcs = glob(["**"]),
+common_core_api_hdrs = [
+    "include/CommonAPI/Version.hpp",
+    "include/CommonAPI/CommonAPI.hpp",
+    "include/CommonAPI/AttributeExtension.hpp",
+    "include/CommonAPI/Logger.hpp",
+    "include/CommonAPI/Event.hpp",
+    "include/CommonAPI/ContainerUtils.hpp",
+    "include/CommonAPI/ProxyManager.hpp",
+    "include/CommonAPI/Enumeration.hpp",
+    "include/CommonAPI/SerializableArguments.hpp",
+    "include/CommonAPI/Deployable.hpp",
+    "include/CommonAPI/Runtime.hpp",
+    "include/CommonAPI/MainLoopContext.hpp",
+    "include/CommonAPI/Struct.hpp",
+    "include/CommonAPI/Attribute.hpp",
+    "include/CommonAPI/Stub.hpp",
+    "include/CommonAPI/Utils.hpp",
+    "include/CommonAPI/Deployment.hpp",
+    "include/CommonAPI/Config.hpp",
+    "include/CommonAPI/Types.hpp",
+    "include/CommonAPI/OutputStream.hpp",
+    "include/CommonAPI/Export.hpp",
+    "include/CommonAPI/TypeOutputStream.hpp",
+    "include/CommonAPI/Variant.hpp",
+    "include/CommonAPI/IniFileReader.hpp",
+    "include/CommonAPI/Factory.hpp",
+    "include/CommonAPI/Extensions/AttributeCacheExtension.hpp",
+    "include/CommonAPI/InputStream.hpp",
+    "include/CommonAPI/Address.hpp",
+    "include/CommonAPI/ByteBuffer.hpp",
+    "include/CommonAPI/RangedInteger.hpp",
+    "include/CommonAPI/CallInfo.hpp",
+    "include/CommonAPI/Proxy.hpp",
+]
+
+common_core_api_srcs = [
+    "src/CommonAPI/Proxy.cpp",
+    "src/CommonAPI/CallInfo.cpp",
+    "src/CommonAPI/IniFileReader.cpp",
+    "src/CommonAPI/Runtime.cpp",
+    "src/CommonAPI/Address.cpp",
+    "src/CommonAPI/MainLoopContext.cpp",
+    "src/CommonAPI/ProxyManager.cpp",
+    "src/CommonAPI/ContainerUtils.cpp",
+    "src/CommonAPI/Utils.cpp",
+    "src/CommonAPI/Logger.cpp",
+]
+
+cc_library(
+    name = "common_core_api_interface",
+    hdrs = common_core_api_hdrs,
+    includes = ["include"],
+    visibility = ["//visibility:public"],
 )
 
-cmake(
-    name = "capicxx_core_runtime",
-    build_args = ["-j"],
-    out_shared_libs = [
-        "libCommonAPI.so",
-        "libCommonAPI.so.3.2.4",
-    ],
-    out_include_dir = "include/CommonAPI-3.2",
-    lib_source = ":all_srcs",
+cc_library(
+    name = "common_core_api_lib",
+    srcs = common_core_api_srcs,
+    local_defines = ["COMMONAPI_INTERNAL_COMPILATION"],
+    deps = [":common_core_api_interface"],
+)
+
+cc_shared_library(
+    name = "CommonAPI",
     visibility = ["//visibility:public"],
+    deps = [
+        ":common_core_api_lib",
+    ],
 )

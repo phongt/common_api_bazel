@@ -1,29 +1,61 @@
 bazel_dep(name = "rules_cc", version = "0.2.16")
-bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+# cmake_configure_file use by vsomeip
+bazel_dep(name = "cmake_configure_file", version = "0.1.6")
+bazel_dep(name = "gcc_toolchain", version = "0.9.0")
+
+gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl", "gcc_toolchains", dev_dependency = True)
+
+[
+    [
+        gcc_toolchains.toolchain(
+            name = "gcc_toolchain_{}".format(arch),
+            extra_cxxflags = [
+                "-std=c++17",
+            ],
+            extra_ldflags = [
+                "-lstdc++",
+            ],
+            gcc_version = "12.5.0",
+            target_arch = arch,
+        ),
+        use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
+        register_toolchains(
+            "@gcc_toolchain_{}//:cc_toolchain".format(arch),
+            dev_dependency = True,
+        ),
+    ]
+    for arch in [
+        "x86_64",
+    ]
+]
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+BOOST_VERSION = "1.87.0"
+
 http_archive(
     name = "boost",
-    build_file_content = """
-filegroup(
-    name = "all_srcs",
-    srcs = glob(["**"], exclude = ["libs/**/test/**"]),
-    visibility = ["//visibility:public"],
-)
-""",
-    sha256 = "7da75f171837577a52bbf217e17f8ea576c7c246e4594d617bfde7fafd408be5",
-    strip_prefix = "boost-1.87.0",
-    urls = ["https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz"],
+    build_file = "@//:third_party/boost.BUILD.bazel",
+    integrity = "sha256-Or16URGKXddGc7JeCj8KSrF1LY1hj0uM6oSmA67sxoA=",
+    strip_prefix = "boost-{version}".format(version = BOOST_VERSION),
+    urls = ["https://github.com/boostorg/boost/releases/download/boost-{version}/boost-{version}-b2-nodocs.tar.xz".format(
+        version = BOOST_VERSION,
+    )],
 )
 
 http_archive(
     name = "vsomeip",
     build_file = "@//:third_party/vsomeip.BUILD.bazel",
-    integrity = "sha256-lXdZnBQt+J6gfEMKfTLBFmf9BlDJOsz+FxATmqFFzr4=",
-    strip_prefix = "vsomeip-3.6.0",
+    integrity = "sha256-hMjkJs3fQ14MVtpwupfno/UbK+rxV+1zih9632bO5Sk=",
+    patch_strip = 1,
+    patches = [
+        "@//:third_party/patches/fix_vsomeip_missing_boost_posix_signal_hdr.patch",
+    ],
+    strip_prefix = "vsomeip-3.6.1",
     urls = [
-        "https://github.com/COVESA/vsomeip/archive/refs/tags/3.6.0.tar.gz",
+        "https://github.com/COVESA/vsomeip/archive/refs/tags/3.6.1.tar.gz",
     ],
 )
 
@@ -31,6 +63,10 @@ http_archive(
     name = "capicxx_core_runtime",
     build_file = "@//:third_party/capicxx_core_runtime.BUILD.bazel",
     integrity = "sha256-5VTQxWPh54pi2keDXlxNqTLAe9UTqMk9na2nJW+kUyU=",
+    patch_strip = 1,
+    patches = [
+        "@//:third_party/patches/fix_common_api_types_compilation.patch",
+    ],
     strip_prefix = "capicxx-core-runtime-3.2.4",
     urls = [
         "https://github.com/COVESA/capicxx-core-runtime/archive/refs/tags/3.2.4.tar.gz",
@@ -76,4 +112,3 @@ commonapi_gen_repo(
     interface_name = "HelloWorld",
     someip_generator = "@commonapi_someip_generator",
 )
-

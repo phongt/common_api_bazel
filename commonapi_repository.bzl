@@ -85,7 +85,7 @@ cc_library(
     ],
     includes = ["generated_core"],
     visibility = ["//visibility:public"],
-    deps = ["@capicxx_core_runtime"],
+    deps = ["@capicxx_core_runtime//:common_core_api_interface"],
 )
 """.format(interface_name=interface_name)
     
@@ -112,7 +112,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":core",
-        "@capicxx_someip_runtime",
+        "@capicxx_someip_runtime//:capicxx_someip_runtime_interface",
     ],
 )
 

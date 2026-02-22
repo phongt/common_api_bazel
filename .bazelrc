@@ -2,3 +2,20 @@
 
 # Optional: Use verbose output for debugging
 # common --verbose_failures
+
+build --cxxopt="-fPIE"
+build --cxxopt="-fPIC"
+build --linkopt=-Wl,--as-needed
+build --linkopt=-Wl,-z,relro
+build --linkopt=-Wl,-z,now
+build --cxxopt=-DBOOST_ALL_NO_LIB
+build --cxxopt=-DBOOST_THREAD_DYN_LINK
+build --cxxopt=-DBOOST_FILESYSTEM_DYN_LINK
+build --cxxopt=-DBOOST_SYSTEM_DYN_LINK
+build --cxxopt=-DVSOMEIP_INTERNAL_SUPPRESS_DEPRECATED
+build --cxxopt=-DVSOMEIP_BOOST_VERSION=108700
+build --cxxopt=-D_GLIBCXX_USE_NANOSLEEP
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --incompatible_strict_action_env=true
+build --incompatible_enable_cc_toolchain_resolution
+build --experimental_cc_static_library

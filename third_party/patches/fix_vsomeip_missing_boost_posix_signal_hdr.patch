@@ -1,0 +1,21 @@
+commit c28f65acd1304d8cf74c292fffdc7f855ee0ee94
+Author: Phong Tran <tranmanphong@gmail.com>
+Date:   Wed Feb 18 22:30:56 2026 +0100
+
+    bazelize vsomeip libs
+
+diff --git a/implementation/runtime/src/application_impl.cpp b/implementation/runtime/src/application_impl.cpp
+index d2697cbc..71e591bb 100644
+--- a/implementation/runtime/src/application_impl.cpp
++++ b/implementation/runtime/src/application_impl.cpp
+@@ -13,6 +13,10 @@
+ #include <boost/asio/ip/tcp.hpp>
+ #include <boost/exception/diagnostic_information.hpp>
+ 
++#if defined(__linux__) || defined(__QNX__)
++#include <boost/asio/detail/posix_signal_blocker.hpp>
++#endif
++
+ #if defined(__linux__)
+ #include <dlfcn.h>
+ #include <sys/syscall.h>

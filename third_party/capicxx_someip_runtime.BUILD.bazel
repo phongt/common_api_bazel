@@ -1,22 +1,96 @@
-load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
-filegroup(
-    name = "all_srcs",
-    srcs = glob(["**"]),
-)
+capicxx_someip_runtime_hdrs = [
+    "include/CommonAPI/SomeIP/Message.hpp",
+    "include/CommonAPI/SomeIP/SubscriptionStatusWrapper.hpp",
+    "include/CommonAPI/SomeIP/StubAdapter.hpp",
+    "include/CommonAPI/SomeIP/Configuration.hpp",
+    "include/CommonAPI/SomeIP/Event.hpp",
+    "include/CommonAPI/SomeIP/ClientId.hpp",
+    "include/CommonAPI/SomeIP/Constants.hpp",
+    "include/CommonAPI/SomeIP/ProxyManager.hpp",
+    "include/CommonAPI/SomeIP/InterfaceHandler.hpp",
+    "include/CommonAPI/SomeIP/SerializableArguments.hpp",
+    "include/CommonAPI/SomeIP/ProxyAsyncCallbackHandler.hpp",
+    "include/CommonAPI/SomeIP/Defines.hpp",
+    "include/CommonAPI/SomeIP/StringEncoder.hpp",
+    "include/CommonAPI/SomeIP/ProxyBase.hpp",
+    "include/CommonAPI/SomeIP/StubManager.hpp",
+    "include/CommonAPI/SomeIP/AddressTranslator.hpp",
+    "include/CommonAPI/SomeIP/ProxyHelper.hpp",
+    "include/CommonAPI/SomeIP/Attribute.hpp",
+    "include/CommonAPI/SomeIP/Deployment.hpp",
+    "include/CommonAPI/SomeIP/Connection.hpp",
+    "include/CommonAPI/SomeIP/InstanceAvailabilityStatusChangedEvent.hpp",
+    "include/CommonAPI/SomeIP/Types.hpp",
+    "include/CommonAPI/SomeIP/OutputStream.hpp",
+    "include/CommonAPI/SomeIP/Watch.hpp",
+    "include/CommonAPI/SomeIP/CommonAPISomeIP.hpp",
+    "include/CommonAPI/SomeIP/ProxyConnection.hpp",
+    "include/CommonAPI/SomeIP/Helper.hpp",
+    "include/CommonAPI/SomeIP/Factory.hpp",
+    "include/CommonAPI/SomeIP/StubAdapterHelper.hpp",
+    "include/CommonAPI/SomeIP/InputStream.hpp",
+    "include/CommonAPI/SomeIP/DispatchSource.hpp",
+    "include/CommonAPI/SomeIP/Address.hpp",
+    "include/CommonAPI/SomeIP/ProxyAsyncEventCallbackHandler.hpp",
+    "include/CommonAPI/SomeIP/Proxy.hpp",
+]
 
-cmake(
-    name = "capicxx_someip_runtime",
-    build_args = ["-j"],
-    out_shared_libs = [
-        "libCommonAPI-SomeIP.so",
-        "libCommonAPI-SomeIP.so.3.2.4",
-    ],
-    out_include_dir = "include/CommonAPI-3.2",
-    lib_source = ":all_srcs",
+capicxx_someip_runtime_srcs = [
+    "src/CommonAPI/SomeIP/SubscriptionStatusWrapper.cpp",
+    "src/CommonAPI/SomeIP/Proxy.cpp",
+    "src/CommonAPI/SomeIP/Factory.cpp",
+    "src/CommonAPI/SomeIP/OutputStream.cpp",
+    "src/CommonAPI/SomeIP/Configuration.cpp",
+    "src/CommonAPI/SomeIP/InstanceAvailabilityStatusChangedEvent.cpp",
+    "src/CommonAPI/SomeIP/StringEncoder.cpp",
+    "src/CommonAPI/SomeIP/DispatchSource.cpp",
+    "src/CommonAPI/SomeIP/StubManager.cpp",
+    "src/CommonAPI/SomeIP/Address.cpp",
+    "src/CommonAPI/SomeIP/ClientId.cpp",
+    "src/CommonAPI/SomeIP/Message.cpp",
+    "src/CommonAPI/SomeIP/ProxyManager.cpp",
+    "src/CommonAPI/SomeIP/ProxyBase.cpp",
+    "src/CommonAPI/SomeIP/AddressTranslator.cpp",
+    "src/CommonAPI/SomeIP/InputStream.cpp",
+    "src/CommonAPI/SomeIP/StubAdapter.cpp",
+    "src/CommonAPI/SomeIP/Connection.cpp",
+    "src/CommonAPI/SomeIP/Watch.cpp",
+]
+
+cc_library(
+    name = "capicxx_someip_runtime_interface",
+    srcs = capicxx_someip_runtime_hdrs,
+    hdrs = capicxx_someip_runtime_hdrs,
+    includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "@capicxx_core_runtime//:capicxx_core_runtime",
-        "@vsomeip//:vsomeip",
+        "@vsomeip//:vsomeip3_interface",
+    ],
+)
+
+cc_library(
+    name = "capicxx_someip_runtime_lib",
+    srcs = capicxx_someip_runtime_srcs,
+    local_defines = [
+        "COMMONAPI_INTERNAL_COMPILATION",
+        "_GLIBCXX_USE_NANOSLEEP",
+    ],
+    deps = [
+        ":capicxx_someip_runtime_interface",
+        "@capicxx_core_runtime//:common_core_api_interface",
+        "@vsomeip//:vsomeip3_interface",
+    ],
+)
+
+cc_shared_library(
+    name = "CommonAPI-SomeIP",
+    dynamic_deps = [
+        "@vsomeip//:vsomeip3",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":capicxx_someip_runtime_lib",
     ],
 )

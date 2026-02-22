@@ -1,4 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@gcc_toolchain//rules_cc:defs.bzl", "cc_binary")
 
 filegroup(
     name = "commonapi4someip_cfg",
@@ -15,12 +15,16 @@ cc_binary(
     data = [":commonapi4someip_cfg"],
     dynamic_deps = [
         "@commonapi_helloworld_generated//:HelloWorld-someip",
+        "@capicxx_core_runtime//:CommonAPI",
+        "@capicxx_someip_runtime//:CommonAPI-SomeIP",
+        "@vsomeip//:vsomeip3",
+        "@vsomeip//:vsomeip3-cfg",
     ],
     env = {
         "COMMONAPI_CONFIG": "$(location :commonapi4someip_cfg)",
     },
     deps = [
-        "@capicxx_core_runtime",
+        "@capicxx_core_runtime//:common_core_api_interface",
         "@commonapi_helloworld_generated//:core",
     ],
 )
@@ -33,12 +37,16 @@ cc_binary(
     data = [":commonapi4someip_cfg"],
     dynamic_deps = [
         "@commonapi_helloworld_generated//:HelloWorld-someip",
+        "@capicxx_core_runtime//:CommonAPI",
+        "@capicxx_someip_runtime//:CommonAPI-SomeIP",
+        "@vsomeip//:vsomeip3",
+        "@vsomeip//:vsomeip3-cfg",
     ],
     env = {
         "COMMONAPI_CONFIG": "$(location :commonapi4someip_cfg)",
     },
     deps = [
-        "@capicxx_core_runtime",
+        "@capicxx_core_runtime//:common_core_api_interface",
         "@commonapi_helloworld_generated//:core",
     ],
 )
