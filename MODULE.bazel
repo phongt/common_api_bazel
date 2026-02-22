@@ -102,7 +102,7 @@ http_archive(
 )
 
 # CommonAPI code generation repository
-commonapi_gen_repo = use_repo_rule("@//:commonapi_repository.bzl", "commonapi_gen_repo")
+commonapi_gen_repo = use_repo_rule("@//:bazel/commonapi_repository.bzl", "commonapi_gen_repo")
 
 commonapi_gen_repo(
     name = "commonapi_helloworld_generated",
